@@ -1,0 +1,96 @@
+/* pages.css —— 各页面的框架布局（仅骨架，具体功能后续填充） */
+
+/* 通用：纵向间距 */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 通用：横向一排 */
+.row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* 学习页（聊资料）：对话区 */
+.chat-box {
+  min-height: 460px;
+}
+
+/* 资料库页：上传区 + 列表区 */
+.library-upload {
+  min-height: 120px;
+}
+
+.library-list {
+  min-height: 260px;
+}
+
+/* 测评页：配置区 + 答题区 */
+.quiz-config {
+  min-height: 120px;
+}
+
+.quiz-stage {
+  min-height: 320px;
+}
+
+/* 进度页：概览指标三连 + 知识点清单 */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.stat-card {
+  text-align: center;
+  padding: 24px 16px;
+}
+
+.stat-card__value {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.stat-card__label {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.kp-list {
+  min-height: 260px;
+}
+
+/* 报告页：操作区 + 周报展示区 */
+.report-actions {
+  min-height: 100px;
+}
+
+.report-view {
+  min-height: 320px;
+}
+
+/* 测评页：结果卡横向布局 */
+.quiz-setup-card {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.quiz-score-card {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  padding: 28px 32px;
+}
+
+@media (max-width: 720px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

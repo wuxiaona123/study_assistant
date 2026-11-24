@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>学习助手</title>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+  <div class="app">
+
+    <!-- 顶部导航栏 -->
+    <header class="topbar">
+      <div class="topbar__brand">学习助手</div>
+
+      <nav class="topbar__nav">
+        <a class="tab" href="#study" data-route="study">学习</a>
+        <a class="tab" href="#library" data-route="library">资料库</a>
+        <a class="tab" href="#quiz" data-route="quiz">测评</a>
+        <a class="tab" href="#progress" data-route="progress">进度</a>
+        <a class="tab" href="#report" data-route="report">报告</a>
+      </nav>
+
+      <div class="topbar__status">
+        <span id="status-dot" class="status-dot"></span>
+        <span id="status-label">未连接</span>
+      </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="main">
+
+      <!-- 学习：聊资料 -->
+      <section id="page-study" class="page">
+        <div class="chat-layout">
+
+          <!-- 左侧：历史对话区（20%） -->
+          <aside class="chat-sidebar">
+            <div class="chat-sidebar__head">历史对话</div>
+            <ul id="session-list" class="session-list"></ul>
+          </aside>
+
+          <!-- 右侧：聊天主区 -->
+          <div class="chat-panel">
+
+            <!-- 顶部工具栏：资料下拉框 + 新对话 -->
+            <div class="chat-toolbar">
+              <select id="doc-select" class="select">
+                <option value="">普通对话（不引用资料）</option>
+              </select>
+              <button id="new-chat-btn" class="btn">新对话</button>
+            </div>
+
+            <!-- 聊天消息区 -->
+            <div id="chat-messages" class="chat-messages">
+              <div id="chat-empty" class="empty-state">
+                <svg class="empty-state__icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="8" y="12" width="48" height="34" rx="8"/>
+                  <path d="M22 46v10l10-10"/>
+                  <path d="M20 24h24M20 32h16"/>
+                </svg>
+                <p class="empty-state__title">开始学习</p>
+                <p class="empty-state__hint">在下方输入问题，或在顶部选择一份资料开始对话</p>
+              </div>
+            </div>
+
+            <!-- 输入区 -->
+            <div class="chat-compose">
+              <textarea id="chat-input" class="chat-input" rows="3" placeholder="输入你的问题，Enter 发送，Shift+Enter 换行"></textarea>
+              <div class="chat-compose__foot">Enter 发送 · Shift+Enter 换行</div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- 资料库：传资料 -->
+      <section id="page-library" class="page">
+        <div class="page-head">
+          <h1 class="page-head__title">资料库</h1>
+          <p class="page-head__desc">上传 PDF / PPT / Word / Markdown / TXT，查看与管理你的资料。</p>
+        </div>
+
+        <div class="stack">
+          <!-- 拖拽上传区 -->
+          <div id="dropzone" class="dropzone">
+            <svg class="dropzone__icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M32 44V16"/>
+              <path d="M22 26l10-10 10 10"/>
+              <path d="M12 40v6a6 6 0 0 0 6 6h28a6 6 0 0 0 6-6v-6"/>
+            </svg>
+            <p class="dropzone__title">拖拽文件到此处，或点击上传</p>
+            <p class="dropzone__hint">支持 PDF、PPT、Word、Markdown、TXT</p>
+          </div>
+          <input id="file-input" type="file" accept=".pdf,.ppt,.pptx,.doc,.docx,.md,.markdown,.txt" multiple hidden>
+
+          <!-- 资料列表 -->
+          <div class="card doc-card">
+            <div class="doc-card__head">
+              <span class="doc-card__title">资料列表</span>
+              <span id="doc-count" class="doc-card__count">0 份</span>
+            </div>
+            <div class="doc-table">
+              <div class="doc-row doc-row--head">
+                <span>文件名</span><span>类型</span><span>大小</span><span>状态</span><span>操作</span>
+              </div>
+              <div id="doc-list"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 测评：做测评 -->
+      <section id="page-quiz" class="page">
+        <div class="page-head">
+          <h1 class="page-head__title">测评</h1>
+          <p class="page-head__desc">基于资料生成选择 / 判断 / 简答，自动批改并定位薄弱点。</p>
+        </div>
+
+        <!-- 第一步：开始前 -->
+        <div id="quiz-setup" class="quiz-view">
+          <div class="card quiz-setup-card">
+            <h2 class="quiz-card__title">开始测评</h2>
+
+            <label class="form-label" for="quiz-doc-select">选择资料</label>
+            <select id="quiz-doc-select" class="select">
+              <option value="">全部资料（演示）</option>
+            </select>
+
+            <label class="form-label">题目数量</label>
+            <div id="quiz-count-group" class="count-group">
+              <button type="button" class="count-btn is-active" data-count="5">5 道</button>
+              <button type="button" class="count-btn" data-count="8">8 道</button>
+              <button type="button" class="count-btn" data-count="10">10 道</button>
+              <button type="button" class="count-btn" data-count="15">15 道</button>
+            </div>
+
+            <button id="quiz-start-btn" class="btn quiz-primary">开始测试</button>
+            <div id="quiz-generating" class="inline-loading" hidden>
+              <span class="thinking__dots"><i></i><i></i><i></i></span> 正在生成测试题...
+            </div>
+          </div>
+        </div>
+
+        <!-- 第二步：答题中 -->
+        <div id="quiz-answering" class="quiz-view" hidden>
+          <div class="quiz-progress">
+            <span id="quiz-progress-text">已作答 0 / 5 题</span>
+            <span>用时 <b id="quiz-timer">00:00</b></span>
+          </div>
+
+          <div id="quiz-questions" class="quiz-questions"></div>
+
+          <div class="quiz-actions">
+            <button id="quiz-abandon-btn" class="mini-btn">放弃</button>
+            <button id="quiz-submit-btn" class="btn quiz-primary">提交</button>
+            <div id="quiz-grading" class="inline-loading" hidden>
+              <span class="thinking__dots"><i></i><i></i><i></i></span> 正在出结果...
+            </div>
+          </div>
+        </div>
+
+        <!-- 第三步：看结果 -->
+        <div id="quiz-result" class="quiz-view" hidden>
+          <div class="card quiz-score-card">
+            <div class="ring-wrap">
+              <svg class="ring" viewBox="0 0 120 120">
+                <circle class="ring__track" cx="60" cy="60" r="52"></circle>
+                <circle id="ring-fill" class="ring__fill" cx="60" cy="60" r="52"></circle>
+              </svg>
+              <div class="ring__label">
+                <span id="ring-score" class="ring__score">0</span>
+                <span id="ring-total" class="ring__total">/ 5</span>
+              </div>
+            </div>
+            <div class="quiz-score-stats">
+              <div><span id="stat-correct" class="stat-num stat-num--green">0</span><span class="stat-label">答对</span></div>
+              <div><span id="stat-wrong" class="stat-num stat-num--red">0</span><span class="stat-label">答错</span></div>
+              <div><span id="stat-time" class="stat-num">00:00</span><span class="stat-label">用时</span></div>
+            </div>
+          </div>
+
+          <h2 class="quiz-section-title">逐题解析</h2>
+          <div id="quiz-result-list" class="result-list"></div>
+
+          <h2 class="quiz-section-title">历史测评记录</h2>
+          <div id="quiz-history-list" class="card history-list"></div>
+        </div>
+
+      </section>
+
+      <!-- 进度：看进度 -->
+      <section id="page-progress" class="page">
+        <div class="page-head">
+          <h1 class="page-head__title">进度</h1>
+          <p class="page-head__desc">查看学习概览与各知识点的掌握情况。</p>
+        </div>
+
+        <!-- 顶部统计卡片 -->
+        <div class="overview-grid">
+          <div class="card overview-card"><span id="ov-docs" class="overview-card__value">0</span><span class="overview-card__label">总资料</span></div>
+          <div class="card overview-card"><span id="ov-mastered" class="overview-card__value">0</span><span class="overview-card__label">已掌握</span></div>
+          <div class="card overview-card"><span id="ov-quizzes" class="overview-card__value">0</span><span class="overview-card__label">学习次数</span></div>
+          <div class="card overview-card"><span id="ov-avg" class="overview-card__value">0</span><span class="overview-card__label">平均分</span></div>
+          <div class="card overview-card"><span id="ov-weak" class="overview-card__value overview-card__value--red">0</span><span class="overview-card__label">薄弱点</span></div>
+        </div>
+
+        <!-- 雷达图 + 知识点列表 -->
+        <div class="progress-split">
+          <div class="card radar-card">
+            <h2 class="quiz-card__title">知识点掌握雷达</h2>
+            <div id="radar" class="radar"></div>
+          </div>
+          <div class="card kp-card">
+            <h2 class="quiz-card__title">知识点清单</h2>
+            <div id="kp-list" class="kp-list"></div>
+          </div>
+        </div>
+
+        <!-- 每份资料详情 + 笔记 -->
+        <h2 class="quiz-section-title">资料详情与笔记</h2>
+        <div id="doc-detail-list" class="doc-detail-list"></div>
+
+        <!-- 薄弱知识点 -->
+        <h2 class="quiz-section-title">薄弱知识点</h2>
+        <div id="weak-list" class="card weak-list"></div>
+
+      </section>
+
+      <!-- 报告：出周报 -->
+      <section id="page-report" class="page">
+        <div class="page-head">
+          <h1 class="page-head__title">报告</h1>
+          <p class="page-head__desc">汇总这段时间学了什么、哪里薄弱、下周建议。</p>
+        </div>
+
+        <!-- 生成控制 -->
+        <div class="card report-control">
+          <label class="form-label">时间范围</label>
+          <div class="report-range">
+            <div class="range-presets">
+              <button type="button" class="count-btn is-active" data-preset="thisweek">本周</button>
+              <button type="button" class="count-btn" data-preset="custom">自定义</button>
+            </div>
+            <div id="report-custom" class="report-custom" hidden>
+              <input type="date" id="report-start" class="select" aria-label="开始日期">
+              <span class="report-range__sep">至</span>
+              <input type="date" id="report-end" class="select" aria-label="结束日期">
+            </div>
+          </div>
+          <button id="report-generate-btn" class="btn quiz-primary">生成周报</button>
+          <div id="report-generating" class="inline-loading" hidden>
+            <span class="thinking__dots"><i></i><i></i><i></i></span> 正在汇总并生成周报...
+          </div>
+        </div>
+
+        <!-- 周报展示 -->
+        <div id="report-view" class="report-view" hidden>
+          <div class="card report-paper">
+            <div class="report-paper__head">
+              <h2 id="report-title" class="report-paper__title">学习周报</h2>
+              <button id="report-download-btn" class="mini-btn mini-btn--retry">下载 .md</button>
+            </div>
+            <div id="report-content" class="report-content markdown"></div>
+          </div>
+        </div>
+
+        <!-- 历史周报 -->
+        <h2 class="quiz-section-title">历史周报</h2>
+        <div id="report-history" class="card history-list"></div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/library.js"></script>
+  <script src="js/quiz.js"></script>
+  <script src="js/progress.js"></script>
+  <script src="js/report.js"></script>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
